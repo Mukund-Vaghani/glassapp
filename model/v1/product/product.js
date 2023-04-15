@@ -62,6 +62,55 @@ var product = {
             }
         })
     },
+
+    homeCategory: function(request,callback){
+        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`,function(error,result){
+            if(!error){
+                con.query(`SELECT * FROM tbl_category WHERE parent_id = ${result[0].id}`,function(error,category){
+                    if(!error){
+                        result[0].category = category;
+                        callback("1","success",result)
+                    }else{
+                        callback("0","something went wrong",null);
+                    }
+                })
+            }else{
+                callback("0","fail",null)
+            }
+        })
+    },
+
+    listingGlasses: function(request,callback){
+        console.log(request)
+        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`,function(error,result){
+            if(!error){
+                con.query(`SELECT * FROM tbl_category WHERE parent_id = ${request.id}`,function(error,category){
+                    if(!error){
+                        result[0].category = category;
+                        asyncLoop(category,function(item,next){
+                            // console.log("DDDDDD",item)
+                            con.query(`SELECT * FROM tbl_product WHERE category_id = ?`,[item.id],function(error,glasses){
+                                // console.log("glasses", glasses);
+                                if(!error){
+                                    item.glasses = glasses;
+                                    next();
+                                }else{
+                                    next()
+                                }
+                            })
+                        },()=>{
+                            callback("1","success",result);
+                        })
+                    }else{
+                        callback("0","something went wrong",null);
+                    }
+                })
+            }else{
+                console.log(error)
+                callback("0","fail",null)
+            }
+        })
+    }
 }
 
 module.exports = product;

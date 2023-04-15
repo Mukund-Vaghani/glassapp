@@ -57,5 +57,38 @@ router.post('/addrating', function (req, res) {
 // })
 })
 
+router.post('/home', function(req,res){
+    var request = req.body;
+     var rules = {
+        id:'required'
+     }
+
+     var message = {
+        require: req.language.reset_keyword_required_message
+     }
+
+     if(middleware.checkValidationRules(req,request,rules,message)){
+        auth.homeCategory(request,function(code,message,data){
+            middleware.send_response(req,res,code,message,data)
+        })
+     }
+})
+
+router.post('/listing',function(req,res){
+    var request = req.body;
+    var rules={
+        id:'required'
+    }
+
+    var message = {
+        require: req.language.reset_keyword_required_message
+     }
+
+     if(middleware.checkValidationRules(req,request,rules,message)){
+        auth.listingGlasses(request,function(code,message,data){
+            middleware.send_response(req,res,code,message,data)
+        })
+     }
+})
 
 module.exports = router;
