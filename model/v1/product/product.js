@@ -12,17 +12,17 @@ var product = {
             color_id: request.color_id,
             dimension_id: request.dimension_id,
             product_name: request.product_name,
-            code:code,
+            code: code,
             product_price: request.product_price,
-            discount_type: (request.discount_type == undefined)?'':request.discount_type,
-            discount_value: (request.discount_value == undefined)?'0':request.discount_value,
+            discount_type: (request.discount_type == undefined) ? '' : request.discount_type,
+            discount_value: (request.discount_value == undefined) ? '0' : request.discount_value,
             product_description: request.product_description
         }
 
         con.query(`INSERT INTO tbl_product SET ?`, [productDetail], function (error, result) {
             if (!error) {
                 var id = result.insertId;
-                console.log("AAAAAAAA",id);
+                console.log("AAAAAAAA", id);
                 product.getProductDetail(id, function (product_data) {
                     // common.sendEmail(request.email, "Welcome to Hotel", `<h4>${request.first_name}You are signup successfully in Hotel</h4>`, function (isSent) {
                     callback('1', 'reset_keyword_success_message', product_data);
@@ -34,11 +34,11 @@ var product = {
         })
     },
 
-    getProductDetail: function(id,callback){
-        con.query(`SELECT * FROM tbl_product WHERE id = ?`,[id],function(error,result){
-            if(!error){
+    getProductDetail: function (id, callback) {
+        con.query(`SELECT * FROM tbl_product WHERE id = ?`, [id], function (error, result) {
+            if (!error) {
                 callback(result);
-            }else{
+            } else {
                 callback(null);
             }
         })
@@ -63,54 +63,74 @@ var product = {
         })
     },
 
-    homeCategory: function(request,callback){
-        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`,function(error,result){
-            if(!error){
-                con.query(`SELECT * FROM tbl_category WHERE parent_id = ${result[0].id}`,function(error,category){
-                    if(!error){
+    homeCategory: function (request, callback) {
+        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`, function (error, result) {
+            if (!error) {
+                con.query(`SELECT * FROM tbl_category WHERE parent_id = ${result[0].id}`, function (error, category) {
+                    if (!error) {
                         result[0].category = category;
-                        callback("1","success",result)
-                    }else{
-                        callback("0","something went wrong",null);
+                        callback("1", "success", result)
+                    } else {
+                        callback("0", "something went wrong", null);
                     }
                 })
-            }else{
-                callback("0","fail",null)
+            } else {
+                callback("0", "fail", null)
             }
         })
     },
 
-    listingGlasses: function(request,callback){
+    listingGlasses: function (request, callback) {
         console.log(request)
-        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`,function(error,result){
-            if(!error){
-                con.query(`SELECT * FROM tbl_category WHERE parent_id = ${request.id}`,function(error,category){
-                    if(!error){
+        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`, function (error, result) {
+            if (!error) {
+                con.query(`SELECT * FROM tbl_category WHERE parent_id = ${request.id}`, function (error, category) {
+                    if (!error) {
                         result[0].category = category;
-                        asyncLoop(category,function(item,next){
+                        asyncLoop(category, function (item, next) {
                             // console.log("DDDDDD",item)
-                            con.query(`SELECT * FROM tbl_product WHERE category_id = ?`,[item.id],function(error,glasses){
+                            con.query(`SELECT * FROM tbl_product WHERE category_id = ?`, [item.id], function (error, glasses) {
                                 // console.log("glasses", glasses);
-                                if(!error){
+                                if (!error) {
                                     item.glasses = glasses;
                                     next();
-                                }else{
+                                } else {
                                     next()
                                 }
                             })
-                        },()=>{
-                            callback("1","success",result);
+                        }, () => {
+                            callback("1", "success", result);
                         })
-                    }else{
-                        callback("0","something went wrong",null);
+                    } else {
+                        callback("0", "something went wrong", null);
                     }
                 })
-            }else{
+            } else {
                 console.log(error)
-                callback("0","fail",null)
+                callback("0", "fail", null)
+            }
+        })
+    },
+
+    getProductDetail: function (request, callback) {
+        con.query(`SELECT * FROM tbl_product WHERE id = ${request.id}`, function (error, result) {
+            if (!error) {
+                callback("1", "success", result)
+            } else {
+                console.log(error);
+                callback("0", "something went wrong", null)
             }
         })
     }
 }
 
 module.exports = product;
+
+
+// SELECT p.*, c.category_type, pd.product_size, pd.product_width, pc.color_name, pc.color_image FROM `tbl_product` p join tbl_category c
+// ON p.category_id = c.id
+// JOIN product_dimension pd
+// ON p.dimension_id = pd.id
+// JOIN product_color pc
+// ON p.color_id = pc.id
+// WHERE p.id = 1;
