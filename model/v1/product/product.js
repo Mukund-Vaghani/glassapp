@@ -69,18 +69,45 @@ var product = {
         })
     },
 
+    // homeCategory: function (request, callback) {
+    //     con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`, function (error, result) {
+    //         if (!error) {
+    //             con.query(`SELECT * FROM tbl_category WHERE parent_id = ${result[0].id}`, function (error, category) {
+    //                 if (!error) {
+    //                     result[0].category = category;
+    //                     callback("1", "reset_keyword_success_message", result)
+    //                 } else {
+    //                     callback("0", "reset_keyword_something_wrong_message", null);
+    //                 }
+    //             })
+    //         } else {
+    //             callback("0", "reset_keyword_data_not_found", null)
+    //         }
+    //     })
+    // },
+
     homeCategory: function (request, callback) {
-        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`, function (error, result) {
+        console.log("request", request);
+        // var homeCatVal = {
+        //     id: (request.id == undefined || request.id == "") ? '' : request.id
+        // }
+        // console.log('id', homeCatVal.id);
+        // var homeSearch = {
+        //     search: (request.search == undefined) ? "" : request.search
+        // }
+        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id} OR category_type LIKE %${request.search}%`, function (error, result) {
             if (!error) {
-                con.query(`SELECT * FROM tbl_category WHERE parent_id = ${result[0].id}`, function (error, category) {
-                    if (!error) {
-                        result[0].category = category;
-                        callback("1", "reset_keyword_success_message", result)
-                    } else {
-                        callback("0", "reset_keyword_something_wrong_message", null);
-                    }
-                })
+                // con.query(`SELECT * FROM tbl_category WHERE parent_id = ${result[0].id}`, function (error, category) {
+                // if (!error) {
+                // result[0].category = category;
+                callback("1", "reset_keyword_success_message", result)
+                // } else {
+                // console.log(error)
+                // callback("0", "reset_keyword_something_wrong_message", null);
+                // }
+                // })
             } else {
+                console.log(error)
                 callback("0", "reset_keyword_data_not_found", null)
             }
         })

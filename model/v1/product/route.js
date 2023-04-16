@@ -60,8 +60,13 @@ router.post('/addrating', function (req, res) {
 router.post('/home', function (req, res) {
     // var request = req.body;
     middleware.decryption(req.body, function (request) {
+        // var rules = {
+        //     id: 'required'
+        // }
+
         var rules = {
-            id: 'required'
+            id: 'nullable|numeric',
+            search: 'nullable|string'
         }
 
         var message = {
