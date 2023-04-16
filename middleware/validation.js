@@ -20,11 +20,11 @@ var middleware = {
                     code: '0',
                     message: error
                 }
-                var response = response_data;
-                // middleware.encryption(response_data, function (response) {
+                // var response = response_data;
+                middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                // })
+                })
                 return false;
             }
         } else {
@@ -39,11 +39,11 @@ var middleware = {
                     code: code,
                     message: trans_message
                 }
-                var response = response_data
-                // middleware.encryption(response_data, function (response) {
+                // var response = response_data
+                middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                // })
+                })
             } else {
                 console.log(data);
                 var response_data = {
@@ -51,11 +51,11 @@ var middleware = {
                     message: trans_message,
                     data: data
                 }
-                var response = response_data;
-                // middleware.encryption(response_data, function (response) {
+                // var response = response_data;
+                middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                // })
+                })
             }
         })
     },
@@ -82,7 +82,7 @@ var middleware = {
     validateApiKey: function (req, res, callback) {
         // bypass of api key
         var end_point = req.path.split('/');
-        var uni_end_point = new Array("resetform", "resetpass", "restuarantlisting", "rest")
+        var uni_end_point = new Array("resetform", "resetpass")
 
         var api_key = (req.headers['api-key'] != undefined && req.headers['api-key'] != "") ? req.headers['api-key'] : "";
 
@@ -131,7 +131,7 @@ var middleware = {
 
     validateUserToken: function (req, res, callback) {
         var end_point = req.path.split('/');
-        var uni_end_point = new Array("login", "signup", "validate", "resetform", "resetpass", "addresturant", "addfood");
+        var uni_end_point = new Array("login", "signup", "validate", "resetform", "resetpass", "addproduct");
 
         var valid_token = (req.headers['token'] != undefined && req.headers['token'] != "") ? req.headers['token'] : "";
 

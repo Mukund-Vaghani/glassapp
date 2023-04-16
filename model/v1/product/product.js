@@ -6,6 +6,7 @@ var asyncLoop = require('node-async-loop');
 var product = {
 
     addproduct: function (request, callback) {
+        console.log("reuest", request);
         var code = common.productCodeGenerator();
         var productDetail = {
             category_id: request.category_id,
@@ -22,19 +23,24 @@ var product = {
         con.query(`INSERT INTO tbl_product SET ?`, [productDetail], function (error, result) {
             if (!error) {
                 var id = result.insertId;
-                console.log("AAAAAAAA", id);
-                product.getProductDetail(id, function (product_data) {
-                    // common.sendEmail(request.email, "Welcome to Hotel", `<h4>${request.first_name}You are signup successfully in Hotel</h4>`, function (isSent) {
-                    callback('1', 'reset_keyword_success_message', product_data);
-                    // })
+                console.log("insertedid", id);
+                product.getProduct(id, function (product_data) {
+                    if (product_data.length > 0) {
+                        // common.sendEmail(request.email, "Welcome to Hotel", `<h4>${request.first_name}You are signup successfully in Hotel</h4>`, function (isSent) {
+                        callback('1', 'reset_keyword_success_message', product_data);
+                        // })
+                    } else {
+                        callback('0', "reset_keyword_something_wrong_message", null)
+                    }
                 })
             } else {
-                callback("0", 'reset_keyword_something_wrong_message', error);
+                callback("0", 'reset_keyword_something_wrong_message', null);
             }
         })
     },
 
-    getProductDetail: function (id, callback) {
+    getProduct: function (id, callback) {
+        console.log("getproductdetail", id);
         con.query(`SELECT * FROM tbl_product WHERE id = ?`, [id], function (error, result) {
             if (!error) {
                 callback(result);
@@ -69,13 +75,13 @@ var product = {
                 con.query(`SELECT * FROM tbl_category WHERE parent_id = ${result[0].id}`, function (error, category) {
                     if (!error) {
                         result[0].category = category;
-                        callback("1", "success", result)
+                        callback("1", "reset_keyword_success_message", result)
                     } else {
-                        callback("0", "something went wrong", null);
+                        callback("0", "reset_keyword_something_wrong_message", null);
                     }
                 })
             } else {
-                callback("0", "fail", null)
+                callback("0", "reset_keyword_data_not_found", null)
             }
         })
     },
@@ -88,9 +94,7 @@ var product = {
                     if (!error) {
                         result[0].category = category;
                         asyncLoop(category, function (item, next) {
-                            // console.log("DDDDDD",item)
                             con.query(`SELECT * FROM tbl_product WHERE category_id = ?`, [item.id], function (error, glasses) {
-                                // console.log("glasses", glasses);
                                 if (!error) {
                                     item.glasses = glasses;
                                     next();
@@ -99,26 +103,26 @@ var product = {
                                 }
                             })
                         }, () => {
-                            callback("1", "success", result);
+                            callback("1", "reset_keyword_success_message", result);
                         })
                     } else {
-                        callback("0", "something went wrong", null);
+                        callback("0", "reset_keyword_something_wrong_message", null);
                     }
                 })
             } else {
                 console.log(error)
-                callback("0", "fail", null)
+                callback("0", "reset_keyword_data_not_found", null)
             }
         })
     },
 
     getProductDetail: function (request, callback) {
-        con.query(`SELECT * FROM tbl_product WHERE id = ${request.id}`, function (error, result) {
+        con.query(`SELECT p.*,c.category_type,pd.product_size,pd.product_width,pc.color_name,pc.color_image FROM tbl_product p join tbl_category c ON p.category_id = c.id JOIN product_dimension pd ON p.dimension_id = pd.id JOIN product_color pc ON p.color_id = pc.id WHERE p.id = ${request.id}`, function (error, result) {
             if (!error) {
-                callback("1", "success", result)
+                callback("1", "reset_keyword_success_message", result)
             } else {
                 console.log(error);
-                callback("0", "something went wrong", null)
+                callback("0", "reset_keyword_something_wrong_message", null)
             }
         })
     }

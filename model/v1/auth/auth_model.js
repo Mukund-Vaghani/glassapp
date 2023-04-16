@@ -1,5 +1,6 @@
 const common = require('../../../config/common');
 var con = require('../../../config/database');
+var global = require('../../../config/constant');
 
 var auth = {
 
@@ -59,13 +60,13 @@ var auth = {
     loginUser: function (request, callback) {
         auth.checkUserEmail(request, function (isExist) {
             if (isExist) {
-                con.query(`SELECT * FROM tbl_user WHERE email = ?`, [request.email], function (error, result) {
+                con.query(`SELECT u.*,CONCAT('${global.BASE_URL}','${global.USER_URL}', u.user_profile) as profile FROM tbl_user u WHERE u.email = ?`, [request.email], function (error, result) {
                     if (result[0].verification_status == 'verified') {
                         if (!error && result.length > 0) {
                             if (result[0].password == request.password) {
                                 auth.loginStatusUpdate(result[0].id, function (isUpdate) {
                                     if (isUpdate) {
-                                        common.sendEmail(request.email, "Login to glassApp", `${result[0].first_name} login successfully`, function (isSent) {
+                                        common.sendEmail(request.email, "Login to glassApp", `${result[0].user_name} login successfully`, function (isSent) {
                                             if (isSent) {
                                                 var id = result[0].id;
                                                 common.checkUpdateToken(id, request, function (token) {
@@ -182,7 +183,7 @@ var auth = {
                     if (!error && result) {
                         callback('1', "log out", null);
                     } else {
-                        callback("0", "something went wrong", null);
+                        callback("0", "reset_keyword_something_wrong_message", null);
                     }
                 })
             } else {
