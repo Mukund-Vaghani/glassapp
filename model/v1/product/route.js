@@ -82,8 +82,8 @@ router.post('/home', function (req, res) {
 })
 
 router.post('/listing', function (req, res) {
-    // var request = req.body;
-    middleware.decryption(req.body, function (request) {
+    var request = req.body;
+    // middleware.decryption(req.body, function (request) {
         console.log(request)
         var rules = {
             id: 'required'
@@ -98,12 +98,12 @@ router.post('/listing', function (req, res) {
                 middleware.send_response(req, res, code, message, data)
             })
         }
-    })
+    // })
 })
 
 router.post('/productdetail', function (req, res) {
-    // var request = req.body;
-    middleware.decryption(req.body, function (request) {
+    var request = req.body;
+    // middleware.decryption(req.body, function (request) {
         console.log(request);
         var rules = {
             id: 'required'
@@ -118,7 +118,7 @@ router.post('/productdetail', function (req, res) {
                 middleware.send_response(req, res, code, message, data)
             })
         }
-    })
+    // })
 })
 
 module.exports = router;

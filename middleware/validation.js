@@ -20,11 +20,11 @@ var middleware = {
                     code: '0',
                     message: error
                 }
-                // var response = response_data;
-                middleware.encryption(response_data, function (response) {
+                var response = response_data;
+                // middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                })
+                // })
                 return false;
             }
         } else {
@@ -39,11 +39,11 @@ var middleware = {
                     code: code,
                     message: trans_message
                 }
-                // var response = response_data
-                middleware.encryption(response_data, function (response) {
+                var response = response_data
+                // middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                })
+                // })
             } else {
                 console.log(data);
                 var response_data = {
@@ -51,11 +51,11 @@ var middleware = {
                     message: trans_message,
                     data: data
                 }
-                // var response = response_data;
-                middleware.encryption(response_data, function (response) {
+                var response = response_data;
+                // middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                })
+                // })
             }
         })
     },
@@ -142,7 +142,7 @@ var middleware = {
             if (valid_token != "") {
                 try {
                     var dec_token = cryptoLib.decrypt(valid_token, shakey, process.env.IV)
-                    console.log(dec_token);
+                    // console.log(dec_token);
                     if (dec_token != "") {
                         con.query(`SELECT * FROM tbl_user_deviceinfo WHERE token = ?`, [dec_token], function (error, result) {
                             if (!error && result.length > 0) {

@@ -9,7 +9,7 @@ var path = require('path');
 router.post('/signup', function (req, res) {
     // var request = req.body;
     middleware.decryption(req.body, function (request) {
-        var rules = {
+            var rules = {
             login_type: 'required',
             social_id: '',
             user_name: 'required',

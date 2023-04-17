@@ -51,7 +51,6 @@ var product = {
     },
 
     addProductRating: function (request, callback) {
-        // console.log(request);
         var productRating = {
             product_id: request.product_id,
             user_id: request.user_id,
@@ -60,7 +59,6 @@ var product = {
 
         con.query(`INSERT INTO tbl_product_rating SET ?`, [productRating], function (error, result) {
             if (!error) {
-                // con.query(`UPDATE tbl_product SET total_review = (SELECT COUNT(id) FROM tbl_restuarant_rating WHERE resturant_id = tbl_restaurant.id),average_rating = (SELECT AVG(rasturant_rating) FROM tbl_restuarant_rating WHERE resturant_id = tbl_restaurant.id) WHERE id = (SELECT resturant_id FROM tbl_restuarant_rating WHERE resturant_id = tbl_restaurant.id LIMIT 1)`)
                 callback("1", "reset_keyword_add_message", result);
             } else {
                 console.log(error)
@@ -114,44 +112,53 @@ var product = {
     },
 
     listingGlasses: function (request, callback) {
-        console.log(request)
-        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`, function (error, result) {
+        con.query(`SELECT * FROM tbl_category WHERE id = ${request.id}`, function (error, category) {
             if (!error) {
-                con.query(`SELECT * FROM tbl_category WHERE parent_id = ${request.id}`, function (error, category) {
+                con.query(`SELECT p.* FROM tbl_product p WHERE p.category_id = ?`, [category[0].id], function (error, glasses) {
                     if (!error) {
-                        result[0].category = category;
-                        asyncLoop(category, function (item, next) {
-                            con.query(`SELECT * FROM tbl_product WHERE category_id = ?`, [item.id], function (error, glasses) {
-                                if (!error) {
-                                    item.glasses = glasses;
-                                    next();
-                                } else {
-                                    next()
-                                }
-                            })
-                        }, () => {
-                            callback("1", "reset_keyword_success_message", result);
-                        })
+                        category[0].no_of_product = glasses.length;
+                        category[0].glasses = glasses;
+                        callback("1", "reset_keyword_success_message", category);
                     } else {
                         callback("0", "reset_keyword_something_wrong_message", null);
                     }
                 })
             } else {
-                console.log(error)
-                callback("0", "reset_keyword_data_not_found", null)
+                callback("0", "reset_keyword_something_wrong_message", null);
             }
         })
     },
 
     getProductDetail: function (request, callback) {
-        con.query(`SELECT p.*,c.category_type,pd.product_size,pd.product_width,pc.color_name,pc.color_image FROM tbl_product p join tbl_category c ON p.category_id = c.id JOIN product_dimension pd ON p.dimension_id = pd.id JOIN product_color pc ON p.color_id = pc.id WHERE p.id = ${request.id}`, function (error, result) {
-            if (!error) {
-                callback("1", "reset_keyword_success_message", result)
-            } else {
-                console.log(error);
-                callback("0", "reset_keyword_something_wrong_message", null)
-            }
-        })
+       con.query(`SELECT * FROM tbl_product WHERE id = ${request.id}`,function(error,result){
+        if(!error){
+            con.query(`SELECT pi.id,pi.product_image FROM tbl_product p JOIN tbl_product_image pi ON p.id = pi.product_id WHERE p.id = ${request.id}`,function(error,image){
+                if(!error){
+                    result[0].image = image;
+                    con.query(`SELECT d.id,d.product_size,d.product_width FROM tbl_product_size ps JOIN tbl_dimension d ON ps.dimesion_id =d.id where ps.product_id = ${request.id}`,function(error,size){
+                        if(!error){
+                            result[0].product_size = size;
+                            con.query(`SELECT c.id,c.color_name,c.color_image FROM tbl_product_color pc JOIN tbl_color c ON pc.color_id = c.id where pc.product_id = ${request.id}`,function(error,color){
+                                if(!error){
+                                    result[0].product_color = color;
+                                    callback("1","success",result)
+                                }else{
+                                    callback("0","color not found",null);
+                                }
+                            })
+                            // callback("1","success",result);
+                        }else{
+                            callback("0","size no found",null)
+                        }
+                    })
+                }else{
+                    callback("0","image not found",null);
+                }
+            })
+        }else{
+            callback("0","data note found",null);
+        }
+       })
     }
 }
 
