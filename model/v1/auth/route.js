@@ -55,7 +55,8 @@ router.post('/login', function (req, res) {
     // var request = req.body;
     middleware.decryption(req.body, function (request) {
         var rules = {
-            email: 'required|email'
+            email: 'required|email',
+            password: 'required'
         }
 
         var message = {

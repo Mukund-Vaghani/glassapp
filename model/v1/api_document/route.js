@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var GLOBALS = require('../../../config/constant');
-var api_model = require('../api_document/api_model');
+var api_model = require('./api_model');
 
 app = express()
 app.set('view engine', 'ejs');

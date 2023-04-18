@@ -16,8 +16,6 @@ router.post('/addproduct', function (req, res) {
 
         var rules = {
             category_id: 'required',
-            color_id: 'required',
-            dimension_id: 'required',
             product_name: 'required',
             product_price: 'required',
             product_description: 'required'
@@ -60,13 +58,8 @@ router.post('/addrating', function (req, res) {
 router.post('/home', function (req, res) {
     // var request = req.body;
     middleware.decryption(req.body, function (request) {
-        // var rules = {
-        //     id: 'required'
-        // }
-
         var rules = {
-            id: 'nullable|numeric',
-            search: 'nullable|string'
+            id: 'required'
         }
 
         var message = {

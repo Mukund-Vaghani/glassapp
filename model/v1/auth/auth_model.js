@@ -1,6 +1,7 @@
 const common = require('../../../config/common');
 var con = require('../../../config/database');
 var global = require('../../../config/constant');
+var middleware = require('../../../middleware/validation');
 
 var auth = {
 
@@ -22,7 +23,14 @@ var auth = {
         })
     },
 
+
     signup: function (request, callback) {
+
+        var password;
+        middleware.encryption(request.password, function (response) {
+            password = response;
+        })
+
         var userDetail = {
             login_type: request.login_type,
             social_id: (request.login_type == "s") ? "" : request.social_id,
@@ -30,7 +38,7 @@ var auth = {
             email: request.email,
             mobile_number: request.mobile_number,
             otp: "1234",
-            password: request.password,
+            password: password,
             // longitude: (request.lattitude == undefined) ? '0.0' : request.lattitude,
             // lattitude: (request.lattitude == undefined) ? '0.0' : request.lattitude,
             user_profile: (request.user_profile == undefined) ? 'user.jpg' : request.user_profile
@@ -58,12 +66,20 @@ var auth = {
     },
 
     loginUser: function (request, callback) {
+        
+        var password;
+        middleware.encryption(request.password, function (response) {
+            password = response;
+        })
+
         auth.checkUserEmail(request, function (isExist) {
             if (isExist) {
                 con.query(`SELECT u.*,CONCAT('${global.BASE_URL}','${global.USER_URL}', u.user_profile) as profile FROM tbl_user u WHERE u.email = ?`, [request.email], function (error, result) {
                     if (result[0].verification_status == 'verified') {
                         if (!error && result.length > 0) {
-                            if (result[0].password == request.password) {
+                            // console.log(re)
+                            console.log("___________", password)
+                            if (result[0].password == password) {
                                 auth.loginStatusUpdate(result[0].id, function (isUpdate) {
                                     if (isUpdate) {
                                         common.sendEmail(request.email, "Login to glassApp", `${result[0].user_name} login successfully`, function (isSent) {
@@ -121,7 +137,7 @@ var auth = {
     },
 
     forgotpassword: function (request, callback) {
-        console.log(request.email);
+        // console.log(request.email);
         con.query(`SELECT * FROM tbl_user WHERE email = ? AND is_active = 1`, [request.email], function (error, result) {
             if (!error && result.length > 0) {
                 require('../../../config/template').forgotPass(result, function (forgottemplate) {

@@ -10,6 +10,7 @@ var shakey = cryptoLib.getHashSha256(process.env.KEY, 32)
 var middleware = {
 
     checkValidationRules: function (res, request, rules, message) {
+        
         const v = Validator.make(request, rules, message);
         if (v.fails()) {
             const errors = v.getErrors();
@@ -20,11 +21,11 @@ var middleware = {
                     code: '0',
                     message: error
                 }
-                var response = response_data;
-                // middleware.encryption(response_data, function (response) {
+                // var response = response_data;
+                middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                // })
+                })
                 return false;
             }
         } else {
@@ -39,11 +40,11 @@ var middleware = {
                     code: code,
                     message: trans_message
                 }
-                var response = response_data
-                // middleware.encryption(response_data, function (response) {
+                // var response = response_data
+                middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                // })
+                })
             } else {
                 console.log(data);
                 var response_data = {
@@ -51,11 +52,11 @@ var middleware = {
                     message: trans_message,
                     data: data
                 }
-                var response = response_data;
-                // middleware.encryption(response_data, function (response) {
+                // var response = response_data;
+                middleware.encryption(response_data, function (response) {
                     res.status(200);
                     res.send(response);
-                // })
+                })
             }
         })
     },
