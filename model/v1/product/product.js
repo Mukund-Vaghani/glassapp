@@ -146,7 +146,6 @@ var product = {
                                     callback("0","color not found",null);
                                 }
                             })
-                            // callback("1","success",result);
                         }else{
                             callback("0","size no found",null)
                         }
@@ -162,8 +161,10 @@ var product = {
     },
 
     searchIteam: function(request,callback){
-        console.log(request.category_type);
-        con.query(`SELECT * FROM tbl_product p JOIN tbl_category c WHERE  CONCAT(p.product_name LIKE '%${request.product_name}%' OR c.category_type LIKE '%${request.category_type}%');`,function(error,result){
+        con.query(`SELECT p.* FROM tbl_product p 
+        JOIN tbl_category c ON p.category_id = c.id
+        JOIN tbl_category c1 ON c.parent_id = c1.id
+        WHERE concat(p.product_name,c.category_type,c1.category_type) LIKE "%${request.search}%";`,function(error,result){
             if(!error){
                     callback("1","success",result);
             }else{
