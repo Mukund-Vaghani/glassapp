@@ -159,16 +159,20 @@ var product = {
             callback("0","data note found",null);
         }
        })
+    },
+
+    searchIteam: function(request,callback){
+        console.log(request.category_type);
+        con.query(`SELECT * FROM tbl_product p JOIN tbl_category c WHERE  CONCAT(p.product_name LIKE '%${request.product_name}%' OR c.category_type LIKE '%${request.category_type}%');`,function(error,result){
+            if(!error){
+                    callback("1","success",result);
+            }else{
+                callback("0","product not found",null);
+            }
+        })
     }
 }
 
 module.exports = product;
 
 
-// SELECT p.*, c.category_type, pd.product_size, pd.product_width, pc.color_name, pc.color_image FROM `tbl_product` p join tbl_category c
-// ON p.category_id = c.id
-// JOIN product_dimension pd
-// ON p.dimension_id = pd.id
-// JOIN product_color pc
-// ON p.color_id = pc.id
-// WHERE p.id = 1;

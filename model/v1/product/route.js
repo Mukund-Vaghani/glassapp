@@ -82,8 +82,8 @@ router.post('/home', function (req, res) {
 })
 
 router.post('/listing', function (req, res) {
-    var request = req.body;
-    // middleware.decryption(req.body, function (request) {
+    // var request = req.body;
+    middleware.decryption(req.body, function (request) {
         console.log(request)
         var rules = {
             id: 'required'
@@ -98,12 +98,12 @@ router.post('/listing', function (req, res) {
                 middleware.send_response(req, res, code, message, data)
             })
         }
-    // })
+    })
 })
 
 router.post('/productdetail', function (req, res) {
-    var request = req.body;
-    // middleware.decryption(req.body, function (request) {
+    // var request = req.body;
+    middleware.decryption(req.body, function (request) {
         console.log(request);
         var rules = {
             id: 'required'
@@ -115,10 +115,17 @@ router.post('/productdetail', function (req, res) {
 
         if (middleware.checkValidationRules(res, request, rules, message)) {
             auth.getProductDetail(request, function (code, message, data) {
-                middleware.send_response(req, res, code, message, data)
+                middleware.send_response(req, res, code, message, data);
             })
         }
-    // })
+    })
+})
+
+router.post('/search',function(req,res){
+    var request = req.body;
+    auth.searchIteam(request,function(code,message,data){
+        middleware.send_response(req,res,code,message,data);
+    })
 })
 
 module.exports = router;
