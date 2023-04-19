@@ -78,7 +78,6 @@ var auth = {
                     if (result[0].verification_status == 'verified') {
                         if (!error && result.length > 0) {
                             // console.log(re)
-                            console.log("___________", password)
                             if (result[0].password == password) {
                                 auth.loginStatusUpdate(result[0].id, function (isUpdate) {
                                     if (isUpdate) {
